@@ -2,6 +2,7 @@ from typing import final
 
 from frontends.gamespy.protocols.presence_connection_manager.aggregates.enums import (
     SdkRevisionType,
+    LoginStatus,
 )
 from frontends.gamespy.protocols.presence_connection_manager.contracts.requests import (
     AddBlockRequest,
