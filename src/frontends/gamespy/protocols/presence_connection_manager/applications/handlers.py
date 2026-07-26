@@ -95,6 +95,11 @@ class LoginHandler(CmdHandlerBase):
 
     def _response_send(self) -> None:
         super()._response_send()
+        self._client.info.login_status = LoginStatus.COMPLETED
+        self._client.info.user_id = self._result.data.user_id
+        self._client.info.profile_id = self._result.data.profile_id
+        self._client.info.sub_profile_id = self._result.data.sub_profile_id
+        self._client.info.namespace_id = self._result.data.namespace_id
         handler = SdkRevisionHandler(self._client, self._request)
         handler.handle()
 
