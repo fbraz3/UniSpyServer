@@ -4,7 +4,7 @@ from backends.library.abstractions.contracts import RESPONSES_DEF, OKResponse
 from backends.protocols.gamespy.chat.requests import RegisterNickRequest
 from backends.protocols.gamespy.presence_connection_manager.handlers import AddBlockHandler, GetProfileHandler, KeepAliveHandler, LoginHandler, LogoutHandler, NewProfileHandler, NewUserHandler, RegisterCDKeyHandler, RegisterNickHandler, StatusHandler, StatusInfoHandler, UpdateProfileHandler
 from backends.protocols.gamespy.presence_connection_manager.requests import GetProfileRequest, LoginRequest, LogoutRequest, NewProfileRequest, RegisterCDKeyRequest, StatusInfoRequest, StatusRequest, UpdateProfileRequest, KeepAliveRequest, NewUserRequest, AddBlockRequest
-from backends.protocols.gamespy.presence_connection_manager.responses import GetProfileResponse, LoginResponse
+from backends.protocols.gamespy.presence_connection_manager.responses import GetProfileResponse, LoginResponse, NewUserResponse
 from backends.urls import PRESENCE_CONNECTION_MANAGER
 
 
@@ -33,7 +33,7 @@ def keep_alive(request: KeepAliveRequest) -> OKResponse:
 
 
 @router.post(f"{PRESENCE_CONNECTION_MANAGER}/NewUserHandler", responses=RESPONSES_DEF)
-def new_user(request: NewUserRequest) -> OKResponse:
+def new_user(request: NewUserRequest) -> NewUserResponse:
     handler = NewUserHandler(request)
     handler.handle()
     return handler.response

@@ -253,6 +253,9 @@ def get_user_infos_by_uniquenick_namespace_id(
         )
         .first()
     )
+    if result is None:
+        return None
+
     data = {
         "user_id": result[0],
         "profile_id": result[1],
@@ -265,11 +268,7 @@ def get_user_infos_by_uniquenick_namespace_id(
         "banned_flag": result[8],
         "namespace_id": result[9],
     }
-    if result is not None:
-        return LoginData(**data)  # type: ignore
-    else:
-        return None
-    return result
+    return LoginData(**data)  # type: ignore
 
 
 def get_user_infos_by_nick_email(
@@ -296,6 +295,9 @@ def get_user_infos_by_nick_email(
         .where(Users.email == email, Profiles.nick == nick)
         .first()
     )
+    if result is None:
+        return None
+
     data = {
         "user_id": result[0],
         "profile_id": result[1],
@@ -308,10 +310,7 @@ def get_user_infos_by_nick_email(
         "banned_flag": result[8],
         "namespace_id": result[9],
     }
-    if result is not None:
-        return LoginData(**data)  # type: ignore
-    else:
-        return None
+    return LoginData(**data)  # type: ignore
 
 
 def update_online_status(user_id: int, status: LoginStatus, session: Session):

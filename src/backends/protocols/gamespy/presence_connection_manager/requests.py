@@ -93,19 +93,21 @@ class KeepAliveRequest(RequestBase):
 
 class NewUserRequest(RequestBase):
     product_id: int
-    game_port: int
-    cd_key: str
-    has_game_name: bool
-    has_product_id: bool
-    has_cdkey: bool
-    has_partner_id: bool
-    has_game_port: bool
+    game_port: Optional[int] = None
+    cd_key: Optional[str] = None
+    has_game_name: bool = False
+    has_product_id: bool = False
+    has_cdkey: bool = False
+    has_partner_id: bool = False
+    has_game_port: bool = False
     nick: str
     email: str
     password: str
     partner_id: int
     game_name: str
     uniquenick: str
+    operation_id: int
+    namespace_id: int
 
 
 class LoginRequest(RequestBase):

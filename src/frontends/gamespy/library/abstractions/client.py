@@ -59,7 +59,7 @@ class ClientBase:
     def on_disconnected(self) -> None:
         lock = threading.Lock()
         with lock:
-            del ClientBase.pool[self.connection.ip_endpoint]
+            ClientBase.pool.pop(self.connection.ip_endpoint, None)
         self.log_debug("client disconnected")
 
     def _create_switcher(self, buffer: bytes) -> "SwitcherBase":  # type: ignore

@@ -251,7 +251,7 @@ class NewUserRequest(RequestBase):
         if "partnerid" in self._request_dict:
             try:
                 self.partner_id = int(self._request_dict["partnerid"])
-                self.has_partner_id_flag = True
+                self.has_partner_id = True
             except ValueError:
                 raise GPParseException("partnerid is incorrect.")
         else:
@@ -260,23 +260,23 @@ class NewUserRequest(RequestBase):
         if "productid" in self._request_dict:
             try:
                 self.product_id = int(self._request_dict["productid"])
-                self.has_product_id_flag = True
+                self.has_product_id = True
             except ValueError:
                 raise GPParseException("productid is incorrect.")
 
         if "gamename" in self._request_dict:
-            self.has_game_name_flag = True
+            self.has_game_name = True
             self.game_name = self._request_dict["gamename"]
 
         if "port" in self._request_dict:
             try:
                 self.game_port = int(self._request_dict["port"])
-                self.has_game_port_flag = True
+                self.has_game_port = True
             except ValueError:
                 raise GPParseException("port is incorrect.")
 
         if "cdkey" in self._request_dict:
-            self.has_cd_key_enc_flag = True
+            self.has_cdkey = True
             self.cd_key = self._request_dict["cdkey"]
 
 
@@ -288,6 +288,7 @@ class BuddyListRequest(RequestBase):
     namespace_id: int
 
     def __init__(self, profile_id: int, namespace_id: int) -> None:
+        super().__init__("")
         assert isinstance(profile_id, int)
         assert isinstance(namespace_id, int)
         self.profile_id = profile_id
@@ -302,6 +303,7 @@ class BlockListRequest(RequestBase):
     namespace_id: int
 
     def __init__(self, profile_id: int, namespace_id: int) -> None:
+        super().__init__("")
         assert isinstance(profile_id, int)
         assert isinstance(namespace_id, int)
         self.profile_id = profile_id

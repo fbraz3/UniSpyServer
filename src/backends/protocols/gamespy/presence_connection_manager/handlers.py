@@ -21,7 +21,7 @@ from backends.protocols.gamespy.presence_connection_manager.requests import (
     UpdateProfileRequest,
     UpdateUserInfoRequest,
 )
-from backends.protocols.gamespy.presence_connection_manager.responses import BlockListResponse, BuddyListResponse, GetProfileResponse, LoginResponse
+from backends.protocols.gamespy.presence_connection_manager.responses import BlockListResponse, BuddyListResponse, GetProfileResponse, LoginResponse, NewUserResponse
 from frontends.gamespy.protocols.presence_connection_manager.aggregates.enums import (
     LoginType,
 )
@@ -107,11 +107,18 @@ class LogoutHandler(HandlerBase):
 
 
 class NewUserHandler(HandlerBase):
-    response: OKResponse
+    response: NewUserResponse
 
-    def __init__(self, request: NewUserRequest) -> None:
-        raise NotImplementedError("Use presence search player newuser router")
-        super().__init__(request)
+    def handle(self) -> None:
+        from backends.protocols.gamespy.presence_search_player.handlers import NewUserHandler as PspNewUserHandler
+        from backends.protocols.gamespy.presence_search_player.requests import NewUserRequest as PspNewUserRequest
+        
+        psp_request = PspNewUserRequest(**self._request.model_dump())
+        psp_handler = PspNewUserHandler(psp_request)
+        psp_handler.handle()
+        res_data = psp_handler.response.result.model_dump()
+        res_data["operation_id"] = self._request.operation_id
+        self.response = NewUserResponse(result=res_data)
         # region Profile
 
         # region Buddy

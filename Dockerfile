@@ -8,7 +8,13 @@ WORKDIR /unispy-server
 COPY src/requirements.txt .
 
 # Install the dependencies
+RUN apt update && apt install -y curl && rm -rf /var/lib/apt/lists/*
 RUN pip install --no-cache-dir -r requirements.txt
 
-RUN apt update
-RUN apt install -y curl
+# Copy source code and common files into the container
+COPY src /unispy-server/src
+COPY common /unispy-server/common
+
+# Set default python environment variables
+ENV PYTHONPATH=/unispy-server/src
+ENV UNISPY_CONFIG=/unispy-server/common/config.json

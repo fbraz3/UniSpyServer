@@ -18,6 +18,8 @@ from frontends.gamespy.protocols.presence_connection_manager.contracts.requests 
     KeepAliveRequest,
     LoginRequest,
     LogoutRequest,
+    BuddyListRequest,
+    BlockListRequest,
 )
 from frontends.gamespy.protocols.presence_connection_manager.contracts.results import (
     BlockListResult,
@@ -132,12 +134,13 @@ class SdkRevisionHandler(CmdHandlerBase):
     def _response_construct(self) -> None:
         self._client.info.sdk_revision = self._request.sdk_revision_type
         if SdkRevisionType.GPINEW_LIST_RETRIEVAL_ON_LOGIN in self._client.info.sdk_revision:
-            BuddyListHandler(self._client).handle()
-            BlockListHandler(self._client).handle()
-            request = StatusInfoRequest()
-            request.profile_id = self._client.info.profile_id
-            request.namespace_id = int(self._client.info.namespace_id)
-            StatusInfoHandler(self._client, request).handle()
+            request_bdy = BuddyListRequest(self._client.info.profile_id, int(self._client.info.namespace_id))
+            request_bdy.operation_id = self._request.operation_id
+            BuddyListHandler(self._client, request_bdy).handle()
+            
+            request_blk = BlockListRequest(self._client.info.profile_id, int(self._client.info.namespace_id))
+            request_blk.operation_id = self._request.operation_id
+            BlockListHandler(self._client, request_blk).handle()
             # todo: add other revision operations
 
 
@@ -154,23 +157,28 @@ class AddBuddyHandler(CmdHandlerBase):
 
 @final
 class BlockListHandler(CmdHandlerBase):
+    _request: BlockListRequest
     _result: BlockListResult
     _response: BlockListResponse
 
-    def __init__(self, client: Client) -> None:
+    def __init__(self, client: Client, request: BlockListRequest) -> None:
         assert isinstance(client, Client)
-        raise NotImplementedError()
+        assert isinstance(request, BlockListRequest)
+        super().__init__(client, request)
+        self._is_fetching = True
 
 
 @final
 class BuddyListHandler(LoginedHandlerBase):
+    _request: BuddyListRequest
     _result: BuddyListResult
     _response: BuddyListResponse
 
-    def __init__(self, client):
-        self._client = client
+    def __init__(self, client: Client, request: BuddyListRequest) -> None:
         assert isinstance(client, Client)
-        raise NotImplementedError()
+        assert isinstance(request, BuddyListRequest)
+        super().__init__(client, request)
+        self._is_fetching = True
 
 
 @final

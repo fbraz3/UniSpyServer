@@ -1,7 +1,7 @@
 services:
   backends:
     container_name: unispy_backends
-    image: unispy-python
+    image: fbraz3/unispy-python
     restart: always
     working_dir: /unispy-server/src
     environment:
@@ -22,7 +22,7 @@ services:
     networks:
       - unispy
   chat:
-    image: unispy-python
+    image: fbraz3/unispy-python
     container_name: unispy-chat
     restart: always
     environment:
@@ -41,7 +41,7 @@ services:
       - unispy
 
   gs:
-    image: unispy-python
+    image: fbraz3/unispy-python
     container_name: unispy-gs
     restart: always
     environment:
@@ -59,10 +59,8 @@ services:
     networks:
       - unispy
 
-
-
   pcm:
-    image: unispy-python
+    image: fbraz3/unispy-python
     container_name: unispy-pcm
     restart: always
     environment:
@@ -80,7 +78,7 @@ services:
     networks:
       - unispy
   psp:
-    image: unispy-python
+    image: fbraz3/unispy-python
     container_name: unispy-psp
     restart: always
     environment:
@@ -99,7 +97,7 @@ services:
       - unispy
 
   qr:
-    image: unispy-python
+    image: fbraz3/unispy-python
     container_name: unispy-qr
     restart: always
     environment:
@@ -118,7 +116,7 @@ services:
       - unispy
 
   sb:
-    image: unispy-python
+    image: fbraz3/unispy-python
     container_name: unispy-sb
     restart: always
     environment:
@@ -137,9 +135,8 @@ services:
     networks:
       - unispy
 
-
   natneg:
-    image: unispy-python
+    image: fbraz3/unispy-python
     container_name: unispy-natneg
     restart: always
     environment:
@@ -158,7 +155,7 @@ services:
       - unispy
 
   web:
-    image: unispy-python
+    image: fbraz3/unispy-python
     container_name: unispy-web
     restart: always
     environment:
@@ -175,9 +172,8 @@ services:
         condition: service_healthy
     networks:
       - unispy
-
   # gtr:
-  #   image: unispy-python
+  #   image: fbraz3/unispy-python
   #   container_name: unispy-gtr
   #   restart: always
   #   environment:
@@ -195,11 +191,7 @@ services:
   #   networks:
   #     - unispy
 
-
-
-
 networks:
   unispy:
-    external: true
     name: unispy
     driver: bridge
