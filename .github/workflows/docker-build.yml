@@ -15,17 +15,17 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       # BUILD AMD64 IMAGE
       - name: Build UniSpy Image - amd64
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           platforms: linux/amd64
           context: .
@@ -41,7 +41,7 @@ jobs:
 
       # BUILD ARM64 IMAGE
       - name: Build UniSpy Image - arm64
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           platforms: linux/arm64
           context: .
@@ -57,13 +57,14 @@ jobs:
 
       # BUILD AND PUSH MULTI-ARCH IMAGE
       - name: Login to Docker Hub
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and Push Multi-Arch Image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
+
         with:
           platforms: linux/amd64,linux/arm64
           context: .
