@@ -1,0 +1,284 @@
+services:
+  postgresql:
+    image: postgres:14
+    container_name: unispy_postgresql
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-unispy}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-CHANGEME_ASAP}
+      POSTGRES_DB: ${POSTGRES_DB:-unispy}
+    volumes:
+    - ./UniSpy_pg.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - pg_isready -U ${POSTGRES_USER:-unispy} -d ${POSTGRES_DB:-unispy}
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+    - unispy
+  redis:
+    image: redis
+    container_name: unispy_redis
+    restart: always
+    command: redis-server --requirepass ${REDIS_PASSWORD:-CHANGEME_ASAP}
+    healthcheck:
+      test:
+      - CMD
+      - redis-cli
+      - -a
+      - ${REDIS_PASSWORD:-CHANGEME_ASAP}
+      - ping
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+    - unispy
+  backends:
+    image: fbraz3/unispy-python
+    container_name: unispy_backends
+    restart: always
+    working_dir: /unispy-server/src
+    environment:
+    - PYTHONPATH=/unispy-server/src
+    - UNISPY_CONFIG=/unispy-server/common/config.json
+    volumes:
+    - ./config.json:/unispy-server/common/config.json
+    - ./log:/unispy-server/log/
+    command: uvicorn --app-dir /unispy-server/src --host 0.0.0.0 --port 8080 backends.routers.home:app
+    healthcheck:
+      test: curl --silent --show-error http://localhost:8080 >/dev/null 2>&1 || exit
+        1
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 2s
+    depends_on:
+      postgresql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+    - unispy
+  chat:
+    image: fbraz3/unispy-python
+    container_name: unispy-chat
+    restart: always
+    environment:
+    - PYTHONPATH=/unispy-server/src
+    - UNISPY_CONFIG=/unispy-server/common/config.json
+    - PYTHONUNBUFFERED=1
+    volumes:
+    - ./config.json:/unispy-server/common/config.json
+    ports:
+    - 0.0.0.0:6667:6667
+    command: python -u src/frontends/gamespy/protocols/chat/applications/server_launcher.py
+    depends_on:
+      backends:
+        condition: service_healthy
+    networks:
+    - unispy
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - python -c "import socket; s=socket.socket(); s.settimeout(2); s.connect((\"127.0.0.1\",
+        6667))" 2>/dev/null
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+  gs:
+    image: fbraz3/unispy-python
+    container_name: unispy-gs
+    restart: always
+    environment:
+    - PYTHONPATH=/unispy-server/src
+    - UNISPY_CONFIG=/unispy-server/common/config.json
+    - PYTHONUNBUFFERED=1
+    volumes:
+    - ./config.json:/unispy-server/common/config.json
+    ports:
+    - 0.0.0.0:29920:29920
+    command: python -u src/frontends/gamespy/protocols/game_status/applications/server_launcher.py
+    depends_on:
+      backends:
+        condition: service_healthy
+    networks:
+    - unispy
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - python -c "import socket; s=socket.socket(); s.settimeout(2); s.connect((\"127.0.0.1\",
+        29920))" 2>/dev/null
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+  pcm:
+    image: fbraz3/unispy-python
+    container_name: unispy-pcm
+    restart: always
+    environment:
+    - PYTHONPATH=/unispy-server/src
+    - UNISPY_CONFIG=/unispy-server/common/config.json
+    - PYTHONUNBUFFERED=1
+    volumes:
+    - ./config.json:/unispy-server/common/config.json
+    ports:
+    - 0.0.0.0:29900:29900
+    command: python -u src/frontends/gamespy/protocols/presence_connection_manager/applications/server_launcher.py
+    depends_on:
+      backends:
+        condition: service_healthy
+    networks:
+    - unispy
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - python -c "import socket; s=socket.socket(); s.settimeout(2); s.connect((\"127.0.0.1\",
+        29900))" 2>/dev/null
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+  psp:
+    image: fbraz3/unispy-python
+    container_name: unispy-psp
+    restart: always
+    environment:
+    - PYTHONPATH=/unispy-server/src
+    - UNISPY_CONFIG=/unispy-server/common/config.json
+    - PYTHONUNBUFFERED=1
+    volumes:
+    - ./config.json:/unispy-server/common/config.json
+    ports:
+    - 0.0.0.0:29901:29901
+    command: python -u src/frontends/gamespy/protocols/presence_search_player/applications/server_launcher.py
+    depends_on:
+      backends:
+        condition: service_healthy
+    networks:
+    - unispy
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - python -c "import socket; s=socket.socket(); s.settimeout(2); s.connect((\"127.0.0.1\",
+        29901))" 2>/dev/null
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+  qr:
+    image: fbraz3/unispy-python
+    container_name: unispy-qr
+    restart: always
+    environment:
+    - PYTHONPATH=/unispy-server/src
+    - UNISPY_CONFIG=/unispy-server/common/config.json
+    - PYTHONUNBUFFERED=1
+    volumes:
+    - ./config.json:/unispy-server/common/config.json
+    ports:
+    - 0.0.0.0:27900:27900/udp
+    command: python -u src/frontends/gamespy/protocols/query_report/applications/server_launcher.py
+    depends_on:
+      backends:
+        condition: service_healthy
+    networks:
+    - unispy
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - python -c "import socket; s=socket.socket(socket.AF_INET, socket.SOCK_DGRAM);
+        s.bind((\"0.0.0.0\", 27900))" 2>/dev/null && exit 1 || exit 0
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+  sb:
+    image: fbraz3/unispy-python
+    container_name: unispy-sb
+    restart: always
+    environment:
+    - PYTHONPATH=/unispy-server/src
+    - UNISPY_CONFIG=/unispy-server/common/config.json
+    - PYTHONUNBUFFERED=1
+    volumes:
+    - ./config.json:/unispy-server/common/config.json
+    ports:
+    - 0.0.0.0:28910:28910
+    - 0.0.0.0:28900:28900
+    command: python -u src/frontends/gamespy/protocols/server_browser/applications/server_launcher.py
+    depends_on:
+      backends:
+        condition: service_healthy
+    networks:
+    - unispy
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - python -c "import socket; s=socket.socket(); s.settimeout(2); s.connect((\"127.0.0.1\",
+        28910))" 2>/dev/null
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+  natneg:
+    image: fbraz3/unispy-python
+    container_name: unispy-natneg
+    restart: always
+    environment:
+    - PYTHONPATH=/unispy-server/src
+    - UNISPY_CONFIG=/unispy-server/common/config.json
+    - PYTHONUNBUFFERED=1
+    volumes:
+    - ./config.json:/unispy-server/common/config.json
+    ports:
+    - 0.0.0.0:27901:27901/udp
+    command: python -u src/frontends/gamespy/protocols/natneg/applications/server_launcher.py
+    depends_on:
+      backends:
+        condition: service_healthy
+    networks:
+    - unispy
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - python -c "import socket; s=socket.socket(socket.AF_INET, socket.SOCK_DGRAM);
+        s.bind((\"0.0.0.0\", 27901))" 2>/dev/null && exit 1 || exit 0
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+  web:
+    image: fbraz3/unispy-python
+    container_name: unispy-web
+    restart: always
+    environment:
+    - PYTHONPATH=/unispy-server/src
+    - UNISPY_CONFIG=/unispy-server/common/config.json
+    - PYTHONUNBUFFERED=1
+    volumes:
+    - ./config.json:/unispy-server/common/config.json
+    ports:
+    - ${WEB_BIND_IP:-127.0.0.1}:${WEB_PORT:-8081}:80
+    command: python -u src/frontends/gamespy/protocols/web_services/applications/server_launcher.py
+    depends_on:
+      backends:
+        condition: service_healthy
+    networks:
+    - unispy
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - python -c "import socket; s=socket.socket(); s.settimeout(2); s.connect((\"127.0.0.1\",
+        80))" 2>/dev/null
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+networks:
+  unispy:
+    name: unispy
+    driver: bridge

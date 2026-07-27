@@ -32,6 +32,10 @@ def encode(password: str):
 def decode(password: str):
     assert isinstance(password, str)
     password = password.replace("_", "=").replace("[", "+").replace("]", "/")
+    
+    # Try adding padding if needed
+    password += "=" * ((4 - len(password) % 4) % 4)
+    
     password_bytes = base64.b64decode(password)
     return game_spy_encode_method(password_bytes).decode("utf-8")
 
@@ -57,13 +61,13 @@ def game_spy_byte_shift(num):
     a *= 0x41A7
     a += (c & 0x7FFF) << 16
 
-    if a < 0:
+    if a > 0x7FFFFFFF:
         a &= 0x7FFFFFFF
         a += 1
 
     a += c >> 15
 
-    if a < 0:
+    if a > 0x7FFFFFFF:
         a &= 0x7FFFFFFF
         a += 1
 

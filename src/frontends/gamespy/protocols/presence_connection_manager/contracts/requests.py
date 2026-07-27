@@ -615,7 +615,7 @@ class UpdateProfileRequest(RequestBase):
         if "uniquenick" in self._request_dict:
             self.uniquenick = self._request_dict["uniquenick"]
 
-        self.extra_info = validate_extra_infos(self._request_dict)
+        self.extra_infos = validate_extra_infos(self._request_dict)
 
 
 @final

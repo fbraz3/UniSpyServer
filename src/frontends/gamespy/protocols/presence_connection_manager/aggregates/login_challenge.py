@@ -27,7 +27,6 @@ class LoginChallengeProof:
             ):
                 tempUserData = f"{self.partnerID}@{self.userData}"
 
-        responseString = f"{self.passwordHash} {
-            ' ' * 48}{tempUserData}{self.challenge1}{self.challenge2}{self.passwordHash}"
+        responseString = f"{self.passwordHash}{' ' * 48}{tempUserData}{self.challenge1}{self.challenge2}{self.passwordHash}"
         hashString = hashlib.md5(responseString.encode()).hexdigest()
         return hashString

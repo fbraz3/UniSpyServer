@@ -64,8 +64,8 @@ class LoginResponse(ResponseBase):
             self._result.user_data,
             self._result.type,
             self._result.partner_id,
-            self._result.user_challenge,
             SERVER_CHALLENGE,
+            self._result.user_challenge,
             self._result.data.password_hash,
         ).generate_proof()
         self.sending_buffer = f"\\lc\\2\\sesskey\\{SESSION_KEY}\\proof\\{

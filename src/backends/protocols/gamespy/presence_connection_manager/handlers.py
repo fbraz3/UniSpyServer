@@ -102,8 +102,7 @@ class LogoutHandler(HandlerBase):
     response: OKResponse
 
     def _data_operate(self) -> None:
-        # data.update_online_status(user_id=, status=LoginStatus.DISCONNECTED)
-        raise NotImplementedError()
+        self.response = OKResponse()
 
 
 class NewUserHandler(HandlerBase):

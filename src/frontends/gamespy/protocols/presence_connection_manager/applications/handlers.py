@@ -301,24 +301,24 @@ class RegisterNickHandler(CmdHandlerBase):
 
 
 @final
-class RemoveBlockHandler(CmdHandlerBase):
+class RemoveBlockHandler(LoginedHandlerBase):
     def __init__(self, client: Client, request: RequestBase) -> None:
         super().__init__(client, request)
-        raise NotImplementedError()
+        self._is_fetching = False
 
 
 @final
-class UpdateProfileHandler(CmdHandlerBase):
+class UpdateProfileHandler(LoginedHandlerBase):
     _request: UpdateProfileRequest
 
     def __init__(self, client: Client, request: UpdateProfileRequest) -> None:
         assert isinstance(request, UpdateProfileRequest)
         super().__init__(client, request)
-        raise NotImplementedError()
+        self._is_fetching = False
 
 
 @final
-class UpdateUserInfoHandler(CmdHandlerBase):
+class UpdateUserInfoHandler(LoginedHandlerBase):
     def __init__(self, client: Client, request: RequestBase) -> None:
         super().__init__(client, request)
-        raise NotImplementedError()
+        self._is_fetching = False
