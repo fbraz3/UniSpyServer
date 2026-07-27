@@ -11,6 +11,23 @@ from frontends.gamespy.library.log.log_manager import LogWriter
 class HttpConnection(ConnectionBase):
     handler: BaseHTTPRequestHandler
 
+    def __init__(
+        self,
+        handler: BaseHTTPRequestHandler,
+        config: ServerConfig,
+        t_client: type[ClientBase],
+        logger: LogWriter,
+    ) -> None:
+        super().__init__(handler, config, t_client, logger)
+        real_ip = handler.headers.get("X-Real-IP")
+        if not real_ip:
+            forwarded_for = handler.headers.get("X-Forwarded-For")
+            if forwarded_for:
+                real_ip = forwarded_for.split(",")[0].strip()
+        if real_ip:
+            self.remote_ip = real_ip
+            self.ip_endpoint = f"{self.remote_ip}:{self.remote_port}"
+
     def send(self, data: bytes) -> None:
         assert isinstance(data, bytes)
         self.handler.send_response(200)
@@ -18,6 +35,7 @@ class HttpConnection(ConnectionBase):
         self.handler.send_header("Content-Length", str(len(data)))
         self.handler.end_headers()
         self.handler.wfile.write(data)
+
 
 class HttpHandler(BaseHTTPRequestHandler):
     conn: HttpConnection

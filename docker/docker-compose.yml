@@ -46,7 +46,7 @@ services:
     volumes:
     - ./config.json:/unispy-server/common/config.json
     - ./log:/unispy-server/log/
-    command: uvicorn --app-dir /unispy-server/src --host 0.0.0.0 --port 8080 backends.routers.home:app
+    command: uvicorn --app-dir /unispy-server/src --host 0.0.0.0 --port 8080 --proxy-headers --forwarded-allow-ips="*" backends.routers.home:app
     healthcheck:
       test: curl --silent --show-error http://localhost:8080 >/dev/null 2>&1 || exit
         1
