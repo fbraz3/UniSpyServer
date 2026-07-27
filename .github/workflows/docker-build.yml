@@ -1,0 +1,78 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * 0'
+
+jobs:
+  build_images:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # BUILD AMD64 IMAGE
+      - name: Build UniSpy Image - amd64
+        uses: docker/build-push-action@v6
+        with:
+          platforms: linux/amd64
+          context: .
+          file: docker/Dockerfile
+          load: true
+          cache-from: type=gha,scope=${{ github.workflow }}-amd64
+          cache-to: type=gha,mode=min,scope=${{ github.workflow }}-amd64
+          tags: fbraz3/unispy-python:amd64
+
+      - name: Test image - amd64
+        run: |
+          docker run --rm --platform=linux/amd64 fbraz3/unispy-python:amd64 python --version
+
+      # BUILD ARM64 IMAGE
+      - name: Build UniSpy Image - arm64
+        uses: docker/build-push-action@v6
+        with:
+          platforms: linux/arm64
+          context: .
+          file: docker/Dockerfile
+          load: true
+          cache-from: type=gha,scope=${{ github.workflow }}-arm64
+          cache-to: type=gha,mode=min,scope=${{ github.workflow }}-arm64
+          tags: fbraz3/unispy-python:arm64
+
+      - name: Test image - arm64
+        run: |
+          docker run --rm --platform=linux/arm64 fbraz3/unispy-python:arm64 python --version
+
+      # BUILD AND PUSH MULTI-ARCH IMAGE
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push Multi-Arch Image
+        uses: docker/build-push-action@v6
+        with:
+          platforms: linux/amd64,linux/arm64
+          context: .
+          file: docker/Dockerfile
+          push: true
+          cache-from: |
+            type=gha,scope=${{ github.workflow }}-amd64
+            type=gha,scope=${{ github.workflow }}-arm64
+          cache-to: type=gha,mode=min,scope=${{ github.workflow }}-multi
+          tags: |
+            fbraz3/unispy-python:latest
+            fbraz3/unispy-python:${{ github.sha }}
