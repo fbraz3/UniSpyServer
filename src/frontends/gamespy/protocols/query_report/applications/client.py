@@ -37,8 +37,9 @@ class Client(ClientBase):
         self.brocker.subscribe()
 
     def stop_brocker(self):
-        assert self.brocker is not None
-        self.brocker.unsubscribe()
+        if self.brocker is not None:
+            self.brocker.unsubscribe()
+            self.brocker = None
 
     def _process_brocker_message(self, message: str):
         from frontends.gamespy.protocols.query_report.v2.contracts.requests import ClientMessageRequest

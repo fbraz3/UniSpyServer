@@ -88,11 +88,17 @@ class GetPlayerDataHandler(HandlerBase):
             self._request.data_index,
             self._session
         )
-        if self.pd is None:
-            raise GSException("No records found in database")
 
     def _result_construct(self):
-        assert self.pd is not None
+        if self.pd is None:
+            self._result = GetPlayerDataResult(
+                local_id=self._request.local_id,
+                profile_id=self._request.profile_id,
+                data="",
+                modified=datetime.fromtimestamp(0),
+            )
+            return
+
         assert isinstance(self.pd.data, str)
         assert isinstance(self.pd.update_time, datetime)
 
@@ -105,7 +111,8 @@ class GetPlayerDataHandler(HandlerBase):
             local_id=self._request.local_id,
             profile_id=self._request.profile_id,
             data=data_formated,
-            modified=self.pd.update_time)
+            modified=self.pd.update_time,
+        )
 
 
 class GetProfileIdHandler(HandlerBase):

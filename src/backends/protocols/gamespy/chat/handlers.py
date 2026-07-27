@@ -212,12 +212,18 @@ class CryptHandler(HandlerBase):
 
     def _data_operate(self) -> None:
         assert self._user is None
+        temp_nick = f"{self._request.client_ip}:{self._request.client_port}"
+        existing_temp = data.get_user_cache_by_nick_name(temp_nick, self._session)
+        if existing_temp is not None:
+            self._session.delete(existing_temp)
+            self._session.flush()
+
         if self._user is None:
             self._user = ChatUserCaches(
                 server_id=self._request.server_id,
                 remote_ip=self._request.client_ip,
                 remote_port=self._request.client_port,
-                nick_name=f"{self._request.client_ip}:{self._request.client_port}",
+                nick_name=temp_nick,
                 websocket_address=self._request.websocket_address,
                 game_name=self._request.gamename,
             )
@@ -344,38 +350,43 @@ class NickHandler(HandlerBase):
         self._get_user()
 
     def _data_operate(self) -> None:
-        # some game do not use CRYPT
-        # todo check game with no encryption send nick or user request first
+        # Check if requested nick_name is already in use by another session
+        existing_nick_user = data.get_user_cache_by_nick_name(
+            self._request.nick_name, self._session
+        )
+
+        if existing_nick_user is not None and existing_nick_user != self._user:
+            is_same_ip = existing_nick_user.remote_ip == self._request.client_ip
+            is_stale = False
+            if isinstance(existing_nick_user.update_time, datetime):
+                is_stale = (datetime.now() - existing_nick_user.update_time).seconds > 120
+
+            if is_same_ip or is_stale:
+                # Same client reconnecting or stale session -> clean up old cache
+                self._session.delete(existing_nick_user)
+                self._session.flush()
+            else:
+                # Different active IP trying to use a nick in use -> return 433 ERR_NICKNAMEINUSE
+                raise NickNameInUseException(
+                    old_nick=self._request.nick_name,
+                    new_nick="",
+                    message="nick name in use",
+                )
+
         if self._user is None:
             # assign nick_name to current user
             self._user = ChatUserCaches(
                 server_id=self._request.server_id,
                 remote_ip=self._request.client_ip,
                 remote_port=self._request.client_port,
-                nick_name=f"{self._request.client_ip}:{self._request.client_port}",
+                nick_name=self._request.nick_name,
                 websocket_address=self._request.websocket_address,
                 game_name="",
             )
+            self._session.add(self._user)
         else:
-            assert isinstance(self._user.update_time, datetime)
-            if (datetime.now() - self._user.update_time).seconds > 120:
-                # old profile delete it
-                self._session.delete(self._user)
-                # data.remove_user_cache(cache)
-                self._user.nick_name = self._request.nick_name  # type: ignore
-                return
-            if (
-                self._user.remote_ip != self._request.client_ip  # type: ignore
-                and self._user.remote_port != self._request.client_port  # type: ignore
-            ):  # type: ignore
-                raise NickNameInUseException(
-                    old_nick=self._request.nick_name,
-                    new_nick="",
-                    message="nick name in use",
-                )
-            else:
-                # update user cache
-                self._user.nick_name = self._request.nick_name  # type: ignore
+            self._user.nick_name = self._request.nick_name  # type: ignore
+
         self._session.commit()
 
     def _result_construct(self) -> None:

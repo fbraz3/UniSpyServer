@@ -12,36 +12,53 @@ class WebSocketBrocker(BrockerBase):
     _publisher: ClientConnection
 
     def subscribe(self):
-        self._publisher = self._subscriber = connect(self.url)
-        th = threading.Thread(target=self._listen)
-        th.start()
+        try:
+            self._publisher = self._subscriber = connect(self.url)
+            th = threading.Thread(target=self._listen, daemon=True)
+            th.start()
+        except Exception as e:
+            self._publisher = None
+            self._subscriber = None
+            GLOBAL_LOGGER.warn(f"Failed to connect to backend websocket broker at {self.url}: {e}")
 
     @property
     def ip_port(self) -> str:
-        name = self._subscriber.socket.getsockname()
-        return f"{name[0]}:{name[1]}"
+        if hasattr(self, "_subscriber") and self._subscriber and hasattr(self._subscriber, "socket") and self._subscriber.socket:
+            name = self._subscriber.socket.getsockname()
+            return f"{name[0]}:{name[1]}"
+        return "0.0.0.0:0"
 
     def _listen(self):
         # we do not listen to channel, if the call back is none
-        if self._call_back_func is None:
+        if self._call_back_func is None or not getattr(self, "_subscriber", None):
             return
 
         try:
             while True:
                 message = self._subscriber.recv()
                 self._call_back_func(message)
-        except ConnectionClosed:
+        except (ConnectionClosed, Exception):
             GLOBAL_LOGGER.warn("backend websocket server is not avaliable")
-            # raise UniSpyException("websocket connection is not established")
 
     def unsubscribe(self):
-        self._subscriber.close()
+        subscriber = getattr(self, "_subscriber", None)
+        if subscriber is not None:
+            try:
+                subscriber.close()
+            except Exception:
+                pass
+            self._subscriber = None
 
     def publish_message(self, message: str):
         super().publish_message(message)
-        if self._publisher is None:
-            raise ValueError("websocket connection is not established")
-        self._publisher.send(message)
+        publisher = getattr(self, "_publisher", None)
+        if publisher is None:
+            GLOBAL_LOGGER.warn("websocket connection is not established, cannot publish message")
+            return
+        try:
+            publisher.send(message)
+        except Exception as e:
+            GLOBAL_LOGGER.warn(f"Failed to publish websocket message: {e}")
 
 
 COUNT = 0
