@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+from fastapi.responses import PlainTextResponse
 from backends.library.abstractions.contracts import RESPONSES_DEF, OKResponse, Response
 from backends.protocols.gamespy.game_status.handlers import (
     AuthGameHandler,
@@ -22,6 +23,39 @@ from backends.protocols.gamespy.game_status.response import AuthGameResponse, Au
 from backends.urls import GAMESTATUS
 
 router = APIRouter()
+
+OVERALL_STATS_TEMPLATE = """Today
+USA
+0 0
+China
+0 0
+GLA
+0 0
+AirForce
+0 0
+Superweapon
+0 0
+Laser
+0 0
+Stealth
+0 0
+Toxin
+0 0
+Demolition
+0 0
+Infantry
+0 0
+Nuke
+0 0
+Tank
+0 0
+"""
+
+
+@router.get("/display.html", response_class=PlainTextResponse)
+@router.get("/{game_name}/display.html", response_class=PlainTextResponse)
+def display_overall_stats(game_name: str = "") -> str:
+    return OVERALL_STATS_TEMPLATE
 
 
 @router.post(f"{GAMESTATUS}/AuthGameHandler", responses=RESPONSES_DEF)
