@@ -22,6 +22,23 @@ class HttpConnection(ConnectionBase):
 class HttpHandler(BaseHTTPRequestHandler):
     conn: HttpConnection
 
+    def do_GET(self) -> None:
+        if "display.html" in self.path:
+            try:
+                import urllib.request
+                backend_url = f"{CONFIG.backend.url}{self.path}"
+                req = urllib.request.urlopen(backend_url)
+                body = req.read()
+                self.send_response(200)
+                self.send_header("Content-type", "text/plain; charset=utf-8")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+                return
+            except Exception as e:
+                pass
+        self.send_error(404, "Not Found")
+
     def do_POST(self) -> None:
         # parsed_url = urlparse(self.path).geturl()
         content_length = int(self.headers["Content-Length"])

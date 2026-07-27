@@ -24,6 +24,7 @@ from backends.urls import GAMESTATUS
 
 router = APIRouter()
 
+# @TODO: implement correctly the display.html endpoint
 OVERALL_STATS_TEMPLATE = """Today
 USA
 0 0
