@@ -285,16 +285,15 @@ class ChatChannelUserCaches(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     nick_name = Column(
         String,
-        ForeignKey("chat_user_caches.nick_name"),
+        ForeignKey("chat_user_caches.nick_name", ondelete="CASCADE"),
         nullable=False,
     )
     user_name = Column(
         String,
-        ForeignKey("chat_user_caches.user_name"),
         nullable=False,
     )
     channel_name = Column(
-        String, ForeignKey("chat_channel_caches.channel_name"), nullable=False
+        String, ForeignKey("chat_channel_caches.channel_name", ondelete="CASCADE"), nullable=False
     )
     server_id = Column(UUID, nullable=False)
     update_time = Column(DateTime, nullable=False, default=datetime.now())
