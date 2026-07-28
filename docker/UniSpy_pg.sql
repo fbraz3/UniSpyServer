@@ -3865,10 +3865,6 @@ COPY unispy.grouplist (groupid, gameid, roomname) FROM stdin;
 386	610	{06}Pipeline
 387	610	{02}Collapsed Tunnel
 388	610	{01}Bridge Crossing
-389	675	GroupRoom1
-390	675	GroupRoom2
-391	675	GroupRoom3
-392	675	QuickMatch
 393	564	NFL Fever 2003
 394	684	Los Angeles (Newbies)
 395	684	Los Angeles (Experts)
@@ -3943,15 +3939,6 @@ COPY unispy.grouplist (groupid, gameid, roomname) FROM stdin;
 492	713	{03}Italian Theater
 493	713	{04}Pacific Theater
 494	713	{05}Russian Theater
-496	675	GroupRoom4
-497	675	GroupRoom5
-498	675	GroupRoom6
-499	675	GroupRoom7
-500	675	GroupRoom8
-501	675	GroupRoom9
-502	675	GroupRoom10
-503	675	GroupRoom11
-504	675	GroupRoom12
 506	557	Kyle's Room
 507	557	Bobby's Room
 508	557	Nick's Room
@@ -4012,7 +3999,6 @@ COPY unispy.grouplist (groupid, gameid, roomname) FROM stdin;
 568	541	ActionBattlefield
 569	792	Conquest Scenarios
 570	792	Battle Scenarios
-571	823	GroupRoom1
 572	824	Unrated 0
 573	824	Unrated 1
 575	824	Unrated 2
@@ -4023,23 +4009,9 @@ COPY unispy.grouplist (groupid, gameid, roomname) FROM stdin;
 580	824	Unrated 7
 581	824	Unrated 8
 582	824	Unrated 9
-586	823	GroupRoom2
-587	823	GroupRoom3
-588	823	GroupRoom4
-589	823	GroupRoom5
-590	823	GroupRoom6
-591	823	GroupRoom7
-592	823	GroupRoom8
-593	823	GroupRoom9
-594	823	GroupRoom10
-595	823	GroupRoom11
-596	823	GroupRoom12
-597	823	QuickMatch
-598	823	GroupRoom13
 599	840	Advanced
 600	840	Intermediate
 601	840	Beginner
-602	823	GroupRoom14
 606	832	Social Room
 607	832	Beginner Room
 608	832	Intermediate Room
@@ -5313,6 +5285,10 @@ COPY unispy.grouplist (groupid, gameid, roomname) FROM stdin;
 2392	467	Main Lobby
 2393	600	Main Lobby
 2399	1003	Lobby 2
+3000	675	QuickMatch
+3001	675	All Games
+3002	823	QuickMatch
+3003	823	All Games
 \.
 
 
