@@ -4,8 +4,6 @@ UniSpyServer is an open-source GameSpy v1 and v2 backend/server emulation adapte
 
 This repository features a unified and self-contained Docker stack designed for seamless server deployment.
 
-> This project is a fork of [GameProgressive/UniSpyServer](https://github.com/GameProgressive/UniSpyServer). We express our sincere gratitude to the original creators and contributors for providing the foundational codebase.
-
 ---
 
 ## 🚀 How to Run the Server (Docker)
