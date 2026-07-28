@@ -61,29 +61,19 @@ class Switcher(SwitcherBase):
         """
         check update option and create handler
         """
-        update_option = self.get_update_option(request)
-        match update_option:
-            case (ServerListUpdateOption.SERVER_MAIN_LIST
-                  | ServerListUpdateOption.P2P_SERVER_MAIN_LIST
-                  | ServerListUpdateOption.LIMIT_RESULT_COUNT):
-                return ServerMainListHandler(self._client, ServerListRequest(request))
-            case ServerListUpdateOption.P2P_GROUP_ROOM_LIST:
-                return P2PGroupRoomListHandler(self._client, ServerListRequest(request))
-            case ServerListUpdateOption.SERVER_FULL_INFO_LIST:
-                return ServerFullInfoListHandler(self._client, ServerListRequest(request))
-            case _:
-                raise ServerBrowserException(
-                    "unknown serverlist update option type")
+        parsed_request = ServerListRequest(request)
+        update_option = parsed_request.update_option
+
+        if update_option & ServerListUpdateOption.P2P_GROUP_ROOM_LIST:
+            return P2PGroupRoomListHandler(self._client, parsed_request)
+        elif update_option & ServerListUpdateOption.SERVER_FULL_INFO_LIST:
+            return ServerFullInfoListHandler(self._client, parsed_request)
+        else:
+            return ServerMainListHandler(self._client, parsed_request)
 
     @staticmethod
     def get_update_option(raw_request: bytes) -> ServerListUpdateOption:
-        # todo check if all game follow this pattern, +2 is calc by sdk server info request
-        update_option_index = raw_request.find(
-            b"\x00\x00\x00\x00", 6)+2
-        update_option_bytes = raw_request[
-            update_option_index: update_option_index + 4
-        ]
-        update_option = ServerListUpdateOption(
-            int.from_bytes(update_option_bytes, byteorder='big')
-        )
-        return update_option
+        try:
+            return ServerListRequest(raw_request).update_option
+        except Exception:
+            return ServerListUpdateOption(0)
