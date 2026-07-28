@@ -29,4 +29,7 @@ RUN chmod +x /unispy-server/docker-entrypoint.sh && \
 ENV PYTHONPATH=/unispy-server/src
 ENV UNISPY_CONFIG=/unispy-server/common/config.json
 
+# Set default container user to non-root unispy user
+USER unispy
+
 ENTRYPOINT ["/unispy-server/docker-entrypoint.sh"]
