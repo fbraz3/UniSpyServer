@@ -11,10 +11,21 @@ COPY src/requirements.txt .
 RUN apt update && apt install -y curl && rm -rf /var/lib/apt/lists/*
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Create non-root user and group
+RUN groupadd -g 1000 unispy && \
+    useradd -u 1000 -g unispy -d /unispy-server -s /bin/bash unispy && \
+    mkdir -p /unispy-server/log
+
 # Copy source code and common files into the container
 COPY src /unispy-server/src
 COPY common /unispy-server/common
 
+# Ensure non-root user owns the app directory and logs
+RUN chown -R unispy:unispy /unispy-server
+
 # Set default python environment variables
 ENV PYTHONPATH=/unispy-server/src
 ENV UNISPY_CONFIG=/unispy-server/common/config.json
+
+# Switch to non-root user
+USER unispy
