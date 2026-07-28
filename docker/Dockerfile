@@ -26,6 +26,3 @@ RUN chown -R unispy:unispy /unispy-server
 # Set default python environment variables
 ENV PYTHONPATH=/unispy-server/src
 ENV UNISPY_CONFIG=/unispy-server/common/config.json
-
-# Switch to non-root user
-USER unispy
