@@ -62,6 +62,7 @@ class Switcher(SwitcherBase):
         check update option and create handler
         """
         parsed_request = ServerListRequest(request)
+        parsed_request.parse()
         update_option = parsed_request.update_option
 
         if update_option & ServerListUpdateOption.P2P_GROUP_ROOM_LIST:
@@ -74,6 +75,8 @@ class Switcher(SwitcherBase):
     @staticmethod
     def get_update_option(raw_request: bytes) -> ServerListUpdateOption:
         try:
-            return ServerListRequest(raw_request).update_option
+            req = ServerListRequest(raw_request)
+            req.parse()
+            return req.update_option
         except Exception:
             return ServerListUpdateOption(0)
