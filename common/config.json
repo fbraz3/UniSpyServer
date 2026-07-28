@@ -96,7 +96,7 @@
       "server_id": "950b7638-a90d-469b-ac1f-861e63c8c613",
       "server_name": "WebServices",
       "listening_address": "0.0.0.0",
-      "listening_port": 80
+      "listening_port": 8081
     },
     "GameTrafficRelay": {
       "server_id": "950b7638-a90d-469b-ac1f-861e63c8c613",
