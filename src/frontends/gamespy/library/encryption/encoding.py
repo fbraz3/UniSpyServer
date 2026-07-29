@@ -7,6 +7,7 @@ class Encoding:
         return data.decode("ascii")
 
     @staticmethod
-    def get_bytes(data: str) -> bytes:
-        assert isinstance(data, str)
-        return data.encode()
+    def get_bytes(data) -> bytes:
+        if isinstance(data, bytes):
+            return data
+        return str(data).encode()
