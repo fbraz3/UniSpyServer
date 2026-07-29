@@ -59,7 +59,8 @@ class P2PGroupRoomListHandler(HandlerBase):
             flag=GameServerFlags.HAS_KEYS_FLAG,
             game_secret_key=self._secret_key,
             peer_room_info=self._caches,
-            keys=self._request.keys
+            keys=self._request.keys,
+            encoding_version=self._request.encoding_version
         )
 
 
@@ -94,7 +95,8 @@ class ServerMainListHandler(HandlerBase):
             client_remote_ip=self._request.client_ip,
             game_secret_key=self._secret_key,
             servers_info=self._caches,
-            keys=self._request.keys
+            keys=self._request.keys,
+            encoding_version=self._request.encoding_version
         )
 
 
@@ -121,7 +123,8 @@ class ServerFullInfoListHandler(HandlerBase):
             client_remote_ip=self._request.client_ip,
             game_secret_key=self._secret_key,
             servers_info=self._caches,
-            keys=all_keys
+            keys=all_keys,
+            encoding_version=self._request.encoding_version
         )
 
 # region Adhoc

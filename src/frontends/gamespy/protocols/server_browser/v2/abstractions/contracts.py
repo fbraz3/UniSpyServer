@@ -76,6 +76,7 @@ class ServerListUpdateOptionResultBase(ResultBase):
     flag: GameServerFlags
     game_secret_key: str
     keys: list[str]
+    encoding_version: int = 2
 
 
 class ServerListUpdateOptionResponseBase(ResponseBase):

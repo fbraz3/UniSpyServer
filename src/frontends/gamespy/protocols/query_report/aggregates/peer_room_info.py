@@ -18,6 +18,6 @@ class PeerRoomInfo(BaseModel):
         """
         return a immutable dict
         """
-        data = self.model_dump(mode="json")
+        data = self.model_dump(mode="json", by_alias=True)
         del data["game_name"]
         return data
