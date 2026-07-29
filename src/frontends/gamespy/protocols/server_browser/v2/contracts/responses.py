@@ -113,18 +113,14 @@ class ServerMainListResponse(ServerListUpdateOptionResponseBase):
         self._buffer.append(STRING_SPLITER)
 
     def __check_key_existance(self):
-        for info in self._result.servers_info:
-            for key in self._result.keys:
-                if key not in info.data:
-                    raise SBException(
-                        f"key:{key} is not in server info, please check database")
+        pass
 
     def __build_servers_full_info(self):
         for info in self._result.servers_info:
             last_header = build_server_info_header(self._result.flag, info)
             self._buffer.extend(last_header)
             for key in self._result.keys:
-                value = info.data[key]
+                value = info.data.get(key, "")
                 self.__add_key_value_to_buffer(value)
 
     def __build_tail(self):
