@@ -77,7 +77,7 @@ class P2PGroupRoomListResponse(ServerListUpdateOptionResponseBase):
         super().build()
         if self._result.encoding_version == 2:
             self.build_server_keys()
-            self.build_unique_value()
+        self.build_unique_value()
         self._build_servers_full_info()
         self.sending_buffer = bytes(self._buffer)
 
@@ -136,7 +136,7 @@ class ServerMainListResponse(ServerListUpdateOptionResponseBase):
         super().build()
         if self._result.encoding_version == 2:
             self.build_server_keys()
-            self.build_unique_value()
+        self.build_unique_value()
         self.__check_key_existance()
         self.__build_servers_full_info()
         self.__build_tail()
