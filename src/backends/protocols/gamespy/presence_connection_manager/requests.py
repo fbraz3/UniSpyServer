@@ -133,19 +133,19 @@ class LoginRequest(RequestBase):
         super().model_post_init(__context)
         if self.type == LoginType.AUTH_TOKEN:
             if self.auth_token is None:
-                raise ValidationError("authtoken is missing.")
+                raise ValueError("authtoken is missing.")
         elif self.type == LoginType.UNIQUENICK_NAMESPACE_ID:
             if self.unique_nick is None:
-                raise ValidationError("unique nick is missing.")
+                raise ValueError("unique nick is missing.")
             if self.namespace_id is None:
-                raise ValidationError("namespace is missing.")
+                raise ValueError("namespace is missing.")
         elif self.type == LoginType.NICK_EMAIL:
             if self.nick is None:
-                raise ValidationError("nick name is missing.")
+                raise ValueError("nick name is missing.")
             if self.email is None:
-                raise ValidationError("email is missing.")
+                raise ValueError("email is missing.")
         else:
-            raise ValidationError(f"request type {self.type} not found.")
+            raise ValueError(f"request type {self.type} not found.")
 
 
 class LogoutRequest(RequestBase):

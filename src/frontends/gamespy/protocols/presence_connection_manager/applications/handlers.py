@@ -95,6 +95,21 @@ class LoginHandler(CmdHandlerBase):
         super().__init__(client, request)
 
     def _response_send(self) -> None:
+        from frontends.gamespy.protocols.presence_connection_manager.aggregates.login_challenge import LoginChallengeProof, SERVER_CHALLENGE
+        from frontends.gamespy.protocols.presence_search_player.aggregates.exceptions import GPLoginBadPasswordException
+
+        client_expected_response = LoginChallengeProof(
+            self._result.user_data,
+            self._result.type,
+            self._result.partner_id,
+            self._request.user_challenge,
+            SERVER_CHALLENGE,
+            self._result.data.password_hash,
+        ).generate_proof()
+
+        if self._request.response != client_expected_response:
+            raise GPLoginBadPasswordException("Incorrect password.")
+
         super()._response_send()
         self._client.info.login_status = LoginStatus.COMPLETED
         self._client.info.user_id = self._result.data.user_id
