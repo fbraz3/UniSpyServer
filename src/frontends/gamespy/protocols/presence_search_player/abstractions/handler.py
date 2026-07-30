@@ -10,7 +10,7 @@ class CmdHandlerBase(CHB):
         assert isinstance(client, Client)
         super().__init__(client, request)
 
-    def _handle_exception(self, ex) -> None:
-        if ex is GPException:
+    def _handle_exception(self, ex: Exception) -> None:
+        if isinstance(ex, GPException):
             self._client.send(ex)
         super()._handle_exception(ex)
