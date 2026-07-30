@@ -12,5 +12,7 @@ class CmdHandlerBase(CHB):
 
     def _handle_exception(self, ex: Exception) -> None:
         if isinstance(ex, GPException):
+            if hasattr(self, "_request") and self._request and hasattr(self._request, "operation_id"):
+                ex.operation_id = self._request.operation_id
             self._client.send(ex)
         super()._handle_exception(ex)

@@ -7,6 +7,8 @@ class GPException(UniSpyException, ResponseBase):
     error_code: GPErrorCode
     sending_buffer: str
 
+    operation_id: int = 1
+
     def __init__(
         self,
         message: str = "General error.",
@@ -14,10 +16,10 @@ class GPException(UniSpyException, ResponseBase):
     ) -> None:
         UniSpyException.__init__(self, message)
         self.error_code = error_code
+        self.operation_id = 1
 
     def build(self) -> None:
-        self.sending_buffer = f"\\error\\\\err\\{int(self.error_code)}\\fatal\\\\errmsg\\{
-            self.message}\\final\\"
+        self.sending_buffer = f"\\error\\\\err\\{int(self.error_code)}\\fatal\\1\\errmsg\\{self.message}\\id\\{self.operation_id}\\final\\"
 
 
 class GPParseException(GPException):
