@@ -58,6 +58,9 @@ def get_profile_id_by_profile_id(profile_id: int, session: Session) -> int:
 
 
 def get_profile_id_by_cdkey(cdkey: str, nick_name: str, session: Session) -> int:
+    if nick_name.lower() == "preorder":
+        return 0
+
     if TYPE_CHECKING:
         assert isinstance(Profiles.profileid, Column)
         assert isinstance(Profiles.userid, Column)
