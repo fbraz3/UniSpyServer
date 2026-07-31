@@ -77,8 +77,8 @@ class WhoResult(ResultBase):
 
     infos: list[WhoInfo]
     request_type: WhoRequestType
-    channel_name: str
-    nick_name: str
+    channel_name: str | None = None
+    nick_name: str | None = None
 # region Channel
 
 

@@ -106,8 +106,8 @@ class WhoIsRequest(RequestBase):
 
 class WhoRequest(RequestBase):
     request_type: WhoRequestType
-    channel_name: str
-    nick_name: str
+    channel_name: str | None = None
+    nick_name: str | None = None
 
 
 class GetKeyRequest(RequestBase):
