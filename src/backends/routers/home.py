@@ -69,6 +69,10 @@ def general_exception_handler(_, exc: Exception):
     return JSONResponse(err_resp.model_dump(mode="json"), status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+@app.get("/")
+def health_check() -> dict:
+    return {"status": "online"}
+
 @app.post("/")
 def home(request: Request, config: ServerConfig) -> dict:
     # todo add the server config to our database
