@@ -92,7 +92,7 @@ def get_peer_group_channel(
             assert isinstance(password, str)
             info = PeerRoomInfo(groupid=gd.groupid,
                                 game_name=game_name,
-                                hostname=result.channel_name,
+                                hostname=gd.roomname,
                                 password=password,
                                 maxplayers=result.max_num_user,
                                 numplayers=waiting_player_count+playing_player_count,
