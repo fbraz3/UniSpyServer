@@ -36,17 +36,19 @@ class TcpHandler(socketserver.BaseRequestHandler):
         self.conn = TcpConnection(
             self, *self.server.unispy_params)  # type: ignore
         self.conn.on_connected()
-        while True:
-            try:
+        try:
+            while True:
                 data = self.request.recv(DATA_SIZE)
                 # ignore disconnect data
                 if not data:
                     break
                 self.conn.on_received(data)
-            except ConnectionResetError:
-                self.conn.on_disconnected()
-            except Exception as e:
-                print(e)
+        except ConnectionResetError:
+            pass
+        except Exception as e:
+            print(f"TCP connection error: {e}")
+        finally:
+            self.conn.on_disconnected()
         pass
 
 
